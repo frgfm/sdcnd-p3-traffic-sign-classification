@@ -210,7 +210,7 @@ Finally, by passing data through the trained model, we can visualize the activat
 
 1st maxpooling layer
 
-![activ_maxpool2d](/home/fg/Documents/Udacity/sdcnd-p3-traffic-sign-classification/static/images/activ_maxpool2d.png)
+![activ_maxpool2d](static/images/activ_maxpool2d.png)
 
 2nd convolution layer
 
