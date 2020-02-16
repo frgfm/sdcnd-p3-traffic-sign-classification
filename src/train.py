@@ -34,7 +34,7 @@ def main(args):
     X_test, y_test = test_set['features'], test_set['labels']
 
     # Dataset statistics
-    sign_classes, class_indices, class_counts = np.unique(y_train, return_index=True, return_counts=True)
+    sign_classes, class_counts = np.unique(y_train, return_counts=True)
 
     print("Number of training examples:", X_train.shape[0])
     print("Number of validation examples:", X_valid.shape[0])
