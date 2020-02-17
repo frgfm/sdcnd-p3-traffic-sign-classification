@@ -140,13 +140,13 @@ The class distribution is imbalanced as shown above. The data preprocessing will
 
 ### Architecture
 
-As suggested by the default repository, the [LeNet5](http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf) architecture was used for image classification, as this architecture has already shown great results on small grayscale images (cf. [MNIST](http://yann.lecun.com/exdb/mnist/)), despite its small size.
+As suggested by the default repository, the [LeNet5](http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf) architecture was used for image classification. This architecture has already shown great results on small grayscale images (cf. [MNIST](http://yann.lecun.com/exdb/mnist/)), despite its small size, which is a similar problem in terms of number of classes *(a few dozens)*, input size *(32x32)*, number of channels *(grayscale)* and learned task *(digit classification, traffic sign classification)*.
 
 ![lenet5](<https://www.researchgate.net/profile/Vladimir_Golovko3/publication/313808170/figure/fig3/AS:552880910618630@1508828489678/Architecture-of-LeNet-5.png>)
 
 *Source: Gradient-based learning applied to document recognition (1998)*
 
-
+Picking a light architecture like LeNet5 is expected to prevent overfitting and to ease the training convergence, thanks to the small number of learnable parameters (compared to a [VGG](https://arxiv.org/abs/1409.1556) or [ResNet](https://arxiv.org/abs/1512.03385) architecture for instance).
 
 By implementing the architecture from the paper and introducing [dropout](http://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf) in the fully connected layers, we get our final model:
 
