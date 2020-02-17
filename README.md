@@ -57,7 +57,9 @@ You can download the trained [model](https://github.com/frgfm/sdcnd-p3-traffic-s
 A training script is available to train an image classifier on the training dataset.
 
 ```
-usage: train.py [-h] [--folder FOLDER] [--batch-size BATCH_SIZE] epochs
+usage: train.py [-h] [--folder FOLDER] [--batch-size BATCH_SIZE] [--lr LR]
+                [--distribution]
+                epochs
 
 Traffic sign classification training
 
@@ -69,6 +71,9 @@ optional arguments:
   --folder FOLDER       Path to data folder (default: ./data)
   --batch-size BATCH_SIZE
                         Batch size (default: 128)
+  --lr LR               Learning rate (default: 0.001)
+  --distribution        Should the class distribution be displayed (default:
+                        False)
 ```
 
 
@@ -126,13 +131,16 @@ The dataset has 34799 training examples, 4410 validation examples and 12630 test
 
 ![class_distribution](static/images/class_distribution.png)
 
-The class distribution is imbalanced as shown below.
+The class distribution is imbalanced as shown above. The data preprocessing will include:
+
+- conversion to grayscale: to reduce the number of channels *(data dimensionality)*
+- normalization: feeding normalized data to the model even on new data distribution *(with the mean and standard deviation of the training set)*.
 
 
 
 ### Architecture
 
-As suggested by the default repository, the LeNet5 architecture was used for image classification.
+As suggested by the default repository, the [LeNet5](http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf) architecture was used for image classification, as this architecture has already shown great results on small grayscale images (cf. [MNIST](http://yann.lecun.com/exdb/mnist/)), despite its small size.
 
 ![lenet5](<https://www.researchgate.net/profile/Vladimir_Golovko3/publication/313808170/figure/fig3/AS:552880910618630@1508828489678/Architecture-of-LeNet-5.png>)
 
@@ -140,7 +148,7 @@ As suggested by the default repository, the LeNet5 architecture was used for ima
 
 
 
-By introducing dropout in the fully connected layers, we get our final model:
+By implementing the architecture from the paper and introducing [dropout](http://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf) in the fully connected layers, we get our final model:
 
 ```shell
 Model: "sequential"
@@ -174,15 +182,32 @@ Non-trainable params: 0
 
 ### Training sequence
 
-Using a flat learning rate over 10 epochs (cf. `train.py`), the training procedure yields very positive results with a final validation accuracy of 95.92%.
+The training sequence is handled by the `train.py` script as follows:
+
+- optimizer: [Adam](https://arxiv.org/abs/1412.6980) *(commonly used for image classification)*
+- batch size: 128 *(selected based on GPU RAM capacity)*
+- epochs: 10
+- learning rate scheduler: flat (constant)
+- learning rate: 1e-3
+- Dropout rate: 0.2 *(reduces overfitting without extending the number of epochs too much)*
+
+
+
+The training procedure yields very positive results with a final validation accuracy of 95.92%.
 
 ![training_monitoring](static/images/training_monitoring.png)
 
-The accuracy over the testing set reaches 92.52%, which shows a good generalization capacity of the model.
+The accuracy over the testing set reaches 92.52%, which shows a good generalization capacity of the model, without any apparent overfitting. The model parameters' values were saved [here](https://github.com/frgfm/sdcnd-p3-traffic-sign-classification/releases/download/v0.1.0/model.h5).
 
 
 
 ### Evaluation on new images
+
+Eight [images](https://github.com/frgfm/sdcnd-p3-traffic-sign-classification/releases/download/v0.1.0/test_images.zip) were selected on the Web for testing purposes *(their resized version is shown below)*:
+
+![all_samples](static/images/all_samples.png)
+
+The difference in resolution and size may have detrimental effects on the model performances for these images. Other visual deformations would also have an influence but the set was manually selected to avoid those.
 
 Using the `test.py` script, we can inspect the predictions of the trained model over the test images. Feel free to use your own.
 
@@ -194,7 +219,9 @@ Using the `test.py` script, we can inspect the predictions of the trained model 
 
 ![test_sample04](static/images/test_sample04.png)
 
-With this limited dataset, the aggregated accuracy of the model is 62.50%. A larger dataset would confirm potential ideas to improve the architecture and training procedure.
+![test_sample05](static/images/test_sample05.png)
+
+With this limited dataset, the aggregated accuracy of the model is 62.50%. The results for the first 5 samples of the dataset are shown above. A larger dataset would confirm potential ideas to improve the architecture and training procedure.
 
 
 

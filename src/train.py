@@ -9,10 +9,12 @@ import argparse
 from pathlib import Path
 import pickle
 import numpy as np
-from utils import convert_to_grayscale, normalize
-from models import lenet5
 import json
 import matplotlib.pyplot as plt
+from tensorflow.keras.optimizers import Adam
+
+from utils import convert_to_grayscale, normalize
+from models import lenet5
 
 
 def main(args):
@@ -43,11 +45,17 @@ def main(args):
     print('Number of classes:', class_counts.shape[0])
 
     # Class distribution
-    plt.bar(np.arange(class_counts.shape[0]), class_counts, align='center')
-    plt.xlabel('Class')
-    plt.ylabel('Number of training examples')
-    plt.xlim([-1, class_counts.shape[0]])
-    plt.show()
+    if args.distribution:
+        _, valid_count = np.unique(y_valid, return_counts=True)
+        _, test_count = np.unique(y_test, return_counts=True)
+        plt.bar(np.arange(43), class_counts, align='center', label='Training')
+        plt.bar(np.arange(43), test_count, align='center', label='Test')
+        plt.bar(np.arange(43), valid_count, align='center', label='Validation')
+        plt.xlabel('Class index')
+        plt.ylabel('Number of training examples')
+        plt.xlim([-1, 43])
+        plt.legend(loc="upper right")
+        plt.show()
 
     # Grayscale & unit values
     X_train = convert_to_grayscale(X_train)
@@ -67,7 +75,8 @@ def main(args):
     print(model.summary())
 
     # specify optimizer, loss function and metric
-    model.compile(optimizer='adam',
+    optimizer = Adam(lr=args.lr)
+    model.compile(optimizer=optimizer,
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
 
@@ -86,6 +95,9 @@ if __name__ == '__main__':
     parser.add_argument("epochs", type=int, help="Number of epochs to train")
     parser.add_argument("--folder", type=str, default='./data', help="Path to data folder")
     parser.add_argument("--batch-size", type=int, default=128, help="Batch size")
+    parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate")
+    parser.add_argument("--distribution", dest='distribution', action='store_true',
+                        help="Should the class distribution be displayed")
 
     args = parser.parse_args()
     main(args)
